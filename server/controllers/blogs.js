@@ -55,8 +55,6 @@ blogsRouter.post('/', async (request, response) => {
 
     const user = await User.findById(userId)
 
-    console.log("Found user", user);
-
     const blog = new Blog({
         title: body.title,
         author: body.author,
@@ -66,11 +64,12 @@ blogsRouter.post('/', async (request, response) => {
     })
 
     const newEntry = await blog.save()
-
     user.blogs = user.blogs.concat(newEntry._id)
     await user.save()
 
-    response.status(201).json(newEntry)
+    const populatedEntry = await Blog.findById(newEntry._id).populate('users')
+
+    response.status(201).json(populatedEntry)
 })
 
 module.exports = blogsRouter

@@ -1,29 +1,39 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import {
+    BrowserRouter as Router,
+    Switch, Route, useRouteMatch
+} from "react-router-dom"
 
 //Import reducers
-import {addNew, initializeBlogs, clearBlogs} from './reducers/blogsReducer'
-import {setMessage, removeMessage} from './reducers/errorReducer'
-import {setUser, removeUser} from './reducers/userReducer'
+import {initializeBlogs, clearBlogs} from './reducers/blogsReducer'
+import {initializeUsers} from './reducers/allUsersReducer'
+import {setUser} from './reducers/userReducer'
+
+//Import views
+import Home from './views/Home'
+import Blogs from './views/Blogs'
+import Users from './views/Users'
+import UserView from './views/UserView'
 
 //Import components
-import Blog from './components/Blog'
-import Notification from './components/Notification'
-import LoginForm from './components/LoginForm'
-import LoggedForm from './components/LoggedForm'
-import Toggable from './components/Toggable'
+import Navbar from './components/Navbar'
 
 //Import services
 import blogService from './services/blogs'
-import loginService from './services/login'
+
 
 const App = () => {
 
-  const dispatch = useDispatch()
+    const dispatch = useDispatch()
 
-  const blogs = useSelector(state => state.blogs)
-  const message = useSelector(state => state.error)
-  const user = useSelector(state => state.user)
+    const user = useSelector(state => state.user)
+    const allUsers = useSelector(state => state.allUsers)
+
+    const match = useRouteMatch('/users/:id')
+    const matchedUser = match
+    ? allUsers.find(entry => entry.id === match.params.id)
+    : null 
 
    useEffect(() => {
     if (user !== null) {
@@ -43,106 +53,30 @@ const App = () => {
     }
   }, [dispatch])
 
-  //Logs in the user through the login service, sets it as the local storage
-  //and sets it as the user state, then resets the login fields.
-  //Else sets the error message
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    try {
-      const username = event.target.username.value
-      const password = event.target.password.value
- 
-      const loginUser = await loginService.login({ username, password})
+  //Get all users
+    useEffect(()=>{
+      dispatch(initializeUsers())
+    },[dispatch])
 
-      blogService.setToken(loginUser.token)
 
-      window.localStorage.setItem(
-        'loggedBlogappUser', JSON.stringify(loginUser)
-      )
-
-      dispatch(setUser(loginUser))
-
-      event.target.username.value = ''
-      event.target.password.value = ''
-
-      dispatch(setMessage(['Logged in succesfully', 'green']))
-      setTimeout(() => dispatch(removeMessage()),
-        5000)
-    } catch (exception) {
-      dispatch(setMessage(['Wrong credentials', 'red']))
-      setTimeout(() => dispatch(removeMessage()),
-        5000)
-    }
-  }
-
-  //Empities the local storage and the user state
-  const handleLogout = (event) => {
-    event.preventDefault()
-    window.localStorage.clear()
-    dispatch(removeUser())
-  }
-
-  const handleSubmit = (event) => {
-    event.preventDefault()
-
-    try {
-      const newBlog = {
-        title: event.target.title.value,
-        author: event.target.author.value,
-        url: event.target.url.value,
-        likes: 0,
-      }
-
-      dispatch(addNew(newBlog))
-
-      dispatch(setMessage(['You created a new blog ' + newBlog.title, 'green']))
-      setTimeout(() => dispatch(removeMessage()), 5000)
-    } catch (err) {
-      dispatch(setMessage(['An error occurred creating the blog: ' + err.message, 'red']))
-      setTimeout(() => dispatch(removeMessage()), 5000)
-    }
-  }
-
-  ///////////Helper Functions
-
-  const loginForm = () => {
-    return (
-      <LoginForm handleSubmit={handleLogin}
-      />
-    )
-  }
-
-  const loggedForm = () => {
-    return (
-      <div>
-        Logged as {user.username} < button onClick={(e) => handleLogout(e)} > Logout</button >
-        <br />
-        <br />
-        <Toggable buttonLabel="Create a new blog">
-          <LoggedForm handleSubmit={handleSubmit}/>
-        </Toggable>
-        <br />
-      </div>
-    )
-  }
-
-  
-
-  //Contitionally renders the helper functions
   return (
     <div>
-      <h1>Blogs</h1>
-      <Notification message={message} />
-
-      {user === null ?
-        loginForm() :
-        loggedForm()
-      }
-
-      {
-        blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} user={user} />)
-      }
+          <Navbar/>
+ 
+            <Switch>
+                <Route path="/blogs">
+                    <Blogs/>
+                </Route>
+                <Route path="/users/:id">
+                  <UserView user={matchedUser}/> 
+                </Route>
+                <Route path="/users">
+                    <Users users={allUsers}/>
+                </Route>
+                <Route path="/">
+                    <Home />
+                </Route>
+            </Switch>
     </div>
   )
 }
