@@ -1,7 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 require('express-async-errors')
-const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 
@@ -9,7 +8,6 @@ const User = require('../models/user')
 blogsRouter.delete('/:id', async (request, response) => {
 
     const id = request.params.id
-    const token = request.token
 
     const decodedToken = request.user
 
@@ -53,7 +51,6 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
 
     const body = request.body
-    const token = request.token
     const userId = request.user.id
 
     const user = await User.findById(userId)

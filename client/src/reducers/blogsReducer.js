@@ -4,7 +4,7 @@ const reducer = (state = [], action) => {
   switch (action.type) {
     case 'LIKE':
       const liked = state.map((element) => {
-        if (element.id == action.data.updated.id){
+        if (element.id === action.data.updated.id){
           return ({...element, likes: element.likes +1})
         } else {
           return element

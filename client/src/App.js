@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 //Import reducers
@@ -25,14 +25,6 @@ const App = () => {
   const message = useSelector(state => state.error)
   const user = useSelector(state => state.user)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
-  //New blog states
-  const [title, setTitle] = useState()
-  const [author, setAuthor] = useState()
-  const [url, setUrl] = useState()
-
    useEffect(() => {
     if (user !== null) {
       blogService.setToken(user.token)
@@ -40,7 +32,7 @@ const App = () => {
     } else {
       dispatch(clearBlogs())
     }
-  }, [user])
+  }, [dispatch, user])
 
   //If there is a local storage for user then it is set as the user state
   useEffect(() => {
@@ -49,7 +41,7 @@ const App = () => {
       const loggedUser = JSON.parse(loggedUserJSON)
       dispatch(setUser(loggedUser))
     }
-  }, [])
+  }, [dispatch])
 
   //Logs in the user through the login service, sets it as the local storage
   //and sets it as the user state, then resets the login fields.
@@ -57,6 +49,9 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
+      const username = event.target.username.value
+      const password = event.target.password.value
+ 
       const loginUser = await loginService.login({ username, password})
 
       blogService.setToken(loginUser.token)
@@ -67,8 +62,8 @@ const App = () => {
 
       dispatch(setUser(loginUser))
 
-      setUsername('')
-      setPassword('')
+      event.target.username.value = ''
+      event.target.password.value = ''
 
       dispatch(setMessage(['Logged in succesfully', 'green']))
       setTimeout(() => dispatch(removeMessage()),
@@ -92,9 +87,9 @@ const App = () => {
 
     try {
       const newBlog = {
-        title: title,
-        author: author,
-        url: url,
+        title: event.target.title.value,
+        author: event.target.author.value,
+        url: event.target.url.value,
         likes: 0,
       }
 
@@ -113,10 +108,6 @@ const App = () => {
   const loginForm = () => {
     return (
       <LoginForm handleSubmit={handleLogin}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        username={username}
-        password={password}
       />
     )
   }
@@ -128,14 +119,7 @@ const App = () => {
         <br />
         <br />
         <Toggable buttonLabel="Create a new blog">
-          <LoggedForm handleSubmit={handleSubmit}
-            handleTitle={({ target }) => setTitle(target.value)}
-            handleAuthor={({ target }) => setAuthor(target.value)}
-            handleUrl={({ target }) => setUrl(target.value)}
-            title={title}
-            author={author}
-            url={url}
-          />
+          <LoggedForm handleSubmit={handleSubmit}/>
         </Toggable>
         <br />
       </div>
@@ -157,8 +141,8 @@ const App = () => {
 
       {
         blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} user={user} />
-        )}
+          <Blog key={blog.id} blog={blog} user={user} />)
+      }
     </div>
   )
 }
