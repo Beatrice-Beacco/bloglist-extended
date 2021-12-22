@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-    BrowserRouter as Router,
     Switch, Route, useRouteMatch
 } from "react-router-dom"
 
@@ -15,6 +14,7 @@ import Home from './views/Home'
 import Blogs from './views/Blogs'
 import Users from './views/Users'
 import UserView from './views/UserView'
+import BlogView from './views/BlogView'
 
 //Import components
 import Navbar from './components/Navbar'
@@ -23,18 +23,26 @@ import Navbar from './components/Navbar'
 import blogService from './services/blogs'
 
 
-const App = () => {
+const App = () => { 
 
     const dispatch = useDispatch()
 
     const user = useSelector(state => state.user)
     const allUsers = useSelector(state => state.allUsers)
+    const allBlogs = useSelector(state => state.blogs)
 
-    const match = useRouteMatch('/users/:id')
-    const matchedUser = match
-    ? allUsers.find(entry => entry.id === match.params.id)
-    : null 
+    //Matched routes
+    const matchUser = useRouteMatch('/users/:id')
+    const matchedUser = matchUser
+    ? allUsers.find(entry => entry.id === matchUser.params.id)
+    : null  
 
+    const matchBlog = useRouteMatch('/blogs/:id')
+    const matchedBlog = matchBlog
+    ? allBlogs.find(entry => entry.id === matchBlog.params.id)
+    : null
+
+   //Handles login and logout state management
    useEffect(() => {
     if (user !== null) {
       blogService.setToken(user.token)
@@ -58,18 +66,23 @@ const App = () => {
       dispatch(initializeUsers())
     },[dispatch])
 
+  //Logout function
+  
 
   return (
     <div>
-          <Navbar/>
+          <Navbar user={user}/>
  
-            <Switch>
-                <Route path="/blogs">
-                    <Blogs/>
+            <Switch>              
+                <Route path="/blogs/:id">
+                    <BlogView blog={matchedBlog}/>
                 </Route>
                 <Route path="/users/:id">
                   <UserView user={matchedUser}/> 
                 </Route>
+                <Route path="/blogs">
+                    <Blogs/>
+                </Route>  
                 <Route path="/users">
                     <Users users={allUsers}/>
                 </Route>

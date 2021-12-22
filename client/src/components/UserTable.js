@@ -5,11 +5,14 @@ const UserTable = ({usersInfo}) => {
     return(
         <div>
         <table>
+        <thead>
         <tr>
             <th>Name</th>
             <th>Blogs created</th>
         </tr>
+        </thead>
 
+        <tbody>
         {usersInfo.map((user, index) => {
             return (
                 <tr key={index}>
@@ -19,6 +22,7 @@ const UserTable = ({usersInfo}) => {
             )
         })
         }
+        </tbody>
         </table>
         </div>
     )

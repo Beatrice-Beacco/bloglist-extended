@@ -95,7 +95,7 @@ const Home = () => {
       const loggedForm = () => {
     return (
       <div>
-        Logged as {user.username} < button onClick={(e) => handleLogout(e)} > Logout</button >
+        Logged as {user.username} <button onClick={(e) => handleLogout(e)} > Logout</button >
         <br />
         <br />
         <Toggable buttonLabel="Create a new blog">
