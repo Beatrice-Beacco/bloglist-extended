@@ -13,7 +13,7 @@ const reducer = (state = [], action) => {
   }
 }
 
-export const initializeUsers = (user) => {
+export const initializeUsers = () => {
   return async dispatch => {
     const entries = await usersService.getAll()
     dispatch({

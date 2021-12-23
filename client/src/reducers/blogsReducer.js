@@ -17,6 +17,17 @@ const reducer = (state = [], action) => {
 
     case 'NEW':
       return state.concat(action.data)
+    
+    case 'NEW_COMMENT':
+        const commented = state.map((element) => {
+        if (element.id === action.data.id){
+          return ({...element, comments: element.comments.concat(action.data.comment)})
+        } else {
+          return element
+        }
+      })
+
+      return commented
 
     case 'REMOVE':
         const filteredState = state.filter(blog => blog.id !== action.data)
@@ -55,6 +66,19 @@ export const addNew = (data) => {
         dispatch({
         type: 'NEW',
         data: newEntry
+    })
+  }
+}
+
+export const addNewComment = (data, id) => {
+    return async dispatch => {
+        await blogsService.createComment(data, id);
+        dispatch({
+        type: 'NEW_COMMENT',
+        data: {
+          comment: data,
+          id
+        }
     })
   }
 }
