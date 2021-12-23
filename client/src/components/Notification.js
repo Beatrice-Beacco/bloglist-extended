@@ -1,5 +1,7 @@
 import React from 'react'
 
+import Alert from 'react-bootstrap/Alert'
+
 const Notification = ({ message }) => {
   if (message === null) {
     return null
@@ -8,20 +10,10 @@ const Notification = ({ message }) => {
   const text = message[0]
   const color = message[1]
 
-  const messageStyle = {
-    color: color,
-    background: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10
-  }
-
   return (
-    <div className="error" style={messageStyle}>
+    <Alert variant={color}>
       {text}
-    </div>
+    </Alert>
   )
 }
 

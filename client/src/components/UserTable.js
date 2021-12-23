@@ -1,10 +1,12 @@
 import React from 'react' 
 import {Link} from "react-router-dom"
 
+import Table from 'react-bootstrap/Table'
+
 const UserTable = ({usersInfo}) => {
     return(
         <div>
-        <table>
+        <Table striped bordered hover>
         <thead>
         <tr>
             <th>Name</th>
@@ -23,7 +25,7 @@ const UserTable = ({usersInfo}) => {
         })
         }
         </tbody>
-        </table>
+        </Table>
         </div>
     )
 }

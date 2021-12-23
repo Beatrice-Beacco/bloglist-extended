@@ -16,6 +16,10 @@ import {addNew} from '../reducers/blogsReducer'
 import {setMessage, removeMessage} from '../reducers/errorReducer'
 import {setUser, removeUser} from '../reducers/userReducer'
 
+//Import Bootstrap
+import Container from 'react-bootstrap/Container'
+import Button from 'react-bootstrap/Button'
+
 const Home = () => {
 
     const dispatch = useDispatch()
@@ -46,11 +50,11 @@ const Home = () => {
       event.target.username.value = ''
       event.target.password.value = ''
 
-      dispatch(setMessage(['Logged in succesfully', 'green']))
+      dispatch(setMessage(['Logged in succesfully', 'success']))
       setTimeout(() => dispatch(removeMessage()),
         5000)
     } catch (exception) {
-      dispatch(setMessage(['Wrong credentials', 'red']))
+      dispatch(setMessage(['Wrong credentials', 'danger']))
       setTimeout(() => dispatch(removeMessage()),
         5000)
     }
@@ -76,10 +80,10 @@ const Home = () => {
 
       dispatch(addNew(newBlog))
 
-      dispatch(setMessage(['You created a new blog ' + newBlog.title, 'green']))
+      dispatch(setMessage(['You created a new blog ' + newBlog.title, 'success']))
       setTimeout(() => dispatch(removeMessage()), 5000)
     } catch (err) {
-      dispatch(setMessage(['An error occurred creating the blog: ' + err.message, 'red']))
+      dispatch(setMessage(['An error occurred creating the blog: ' + err.message, 'danger']))
       setTimeout(() => dispatch(removeMessage()), 5000)
     }
   }
@@ -95,7 +99,7 @@ const Home = () => {
       const loggedForm = () => {
     return (
       <div>
-        Logged as {user.username} <button onClick={(e) => handleLogout(e)} > Logout</button >
+        Logged as <b>{user.username}</b>{' '} <Button variant="outline-danger" size="sm" onClick={(e) => handleLogout(e)} > Logout</Button>
         <br />
         <br />
         <Toggable buttonLabel="Create a new blog">
@@ -109,6 +113,7 @@ const Home = () => {
 
     return(      
     <div>
+    <Container className="mt-3">
     <h1>Home</h1>
 
     <Notification message={message} />
@@ -117,7 +122,8 @@ const Home = () => {
         loginForm() :
         loggedForm()
       }
-      </div>
+    </Container>
+    </div>
     )
 }
 
